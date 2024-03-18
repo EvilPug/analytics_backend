@@ -1,0 +1,10 @@
+button.delete {
+  width: 40px;
+  min-width: 40px;
+  padding: 0;
+}
+
+.delete span {
+  padding: 0;
+  margin: 0;
+}

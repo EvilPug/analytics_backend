@@ -423,6 +423,12 @@ export default (groups: Array<string>) => {
             icon: WorkProgramInDirectionIcon,
             selectedIcon: WorkProgramInDirectionSelectedIcon,
         },
+        {
+            title: 'Календарный учебный график',
+            link: appRouter.getCalendarTrainingSchedule(),
+            icon: EducationPlanIcon,
+            selectedIcon: EducationPlanIcon,
+          },
     ];
 
     const fourthMenu = isUserCanSeeProfessions(groups) ? [

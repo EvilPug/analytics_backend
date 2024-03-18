@@ -70,8 +70,10 @@ import FinalCertification from "./containers/FinalCertification";
 import FinalCertificationList from "./containers/FinalCertification/CertificationList";
 import AcademicPlanUpdate from "./containers/AcademicPlanUpdate";
 
- import EmailSuccessPage from "./containers/EmailSuccessPage";
- import EmailFailPage from "./containers/EmailFailPage";
+import EmailSuccessPage from "./containers/EmailSuccessPage";
+import EmailFailPage from "./containers/EmailFailPage";
+
+import CalendarTrainingSchedule from './containers/CalendarTrainingSchedule';
 
 const routerService = RouterService.factory();
 
@@ -166,6 +168,7 @@ export default () => (
               <Route path={routerService.getProfessionSkillsRoute()} element={<AuthRoute><ProfessionSkills trajectoryRoute /></AuthRoute>} />
               <Route path={routerService.getEmailConfirmFail()} element={<EmailFailPage/>} />
               <Route path={routerService.getEmailConfirmSuccess()} element={<EmailSuccessPage/>} />
+              <Route path={routerService.getCalendarTrainingSchedule()} element={<AuthRoute><CalendarTrainingSchedule /></AuthRoute>} />
               {/*<Route path={routerService.getForbiddenPage()} element={<ForbiddenPage/>} />*/}
               <Route path={routerService.getSignInRoute()} element={<SignIn/>} />
               <Route path={routerService.getSignUpRoute()} element={<SignUp/>} />

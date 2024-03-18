@@ -37,6 +37,7 @@ const FINAL_CERTIFICATION_LIST = 'gia-list';
 const USER_SETTINGS = 'user-settings';
 const EMAIL_CONFIRM_SUCCESS = 'email-confirm-success';
 const EMAIL_CONFIRM_FAIL = 'email-confirm-error';
+const CALENDAR_TRAINING_SCHEDULE = 'calendar-training-schedule';
 
 const RECORDS = 'records';
 
@@ -371,6 +372,10 @@ export default class RouterService {
 
     getEmailConfirmFail = () => {
         return SEPARATOR + EMAIL_CONFIRM_FAIL;
+    }
+
+    getCalendarTrainingSchedule() {
+        return SEPARATOR + CALENDAR_TRAINING_SCHEDULE;
     }
 }
 

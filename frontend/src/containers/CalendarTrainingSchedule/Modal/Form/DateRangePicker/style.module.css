@@ -1,0 +1,7 @@
+.range {
+  width: 100%;
+}
+
+.picker {
+  flex-grow: 1;
+}

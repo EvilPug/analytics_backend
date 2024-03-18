@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px 50px;
+  box-sizing: border-box;
+}
+
+.section {
+  display: flex;
+  flex: 1;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
