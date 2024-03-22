@@ -9,57 +9,35 @@ import AddRowButton from './AddRowButton';
 import DateRangePicker from './DateRangePicker';
 import RemoveRowButton from './RemoveRowButton';
 
+import { dateRangeFields, FieldLabelMap, mockPrimarySchedules } from './utils';
+import type { IPrimaryScheduleSelectItem } from './types';
+
 import styles from './style.module.css';
-
-interface ISelectItem {
-  id: string;
-  label: string;
-}
-
-const mockItems: ISelectItem[] = [
-  { id: '1', label: 'Aboaba 213.112.31.' },
-  { id: '2', label: 'Aboba 21231.5125125.212' },
-  { id: '3', label: 'Abobusss 12311.3212.312' },
-];
 
 type CalendarTrainingScheduleFormProps = Pick<
   ReturnType<typeof useCalendarTrainingScheduleForm>,
-  | 'values'
-  | 'errors'
-  | 'onPrimaryScheduleIdChange'
-  | 'onTheoreticalEducationChange'
-  | 'onHolidaysChange'
-  | 'onVacationsChange'
-  | 'onAddRow'
-  | 'onRemoveRow'
+  'values' | 'errors' | 'onPrimaryScheduleIdChange' | 'onDateRangeChange' | 'onAddRow' | 'onRemoveRow'
 >;
 
 const CalendarTrainingScheduleForm: React.FC<CalendarTrainingScheduleFormProps> = ({
   values,
   errors,
   onPrimaryScheduleIdChange,
-  onTheoreticalEducationChange,
-  onHolidaysChange,
-  onVacationsChange,
+  onDateRangeChange,
   onAddRow,
   onRemoveRow,
 }) => {
-  const primarySchedules: ISelectItem[] = mockItems;
+  const [primarySchedules, setPrimarySchedules] = React.useState<IPrimaryScheduleSelectItem[]>([]);
+
+  React.useEffect(() => {
+    // TODO: Реализовать запрос API
+    if (values.type === 'secondary') {
+      setPrimarySchedules(mockPrimarySchedules);
+    }
+  }, [values.type]);
 
   function handleChange(event: SelectChangeEvent<string | null>): void {
     onPrimaryScheduleIdChange(event.target.value);
-  }
-
-  function handleAddTheoreticalEducationRow(): void {
-    onAddRow('theoreticalEducation');
-  }
-
-  function handleAddHolidayRow(): void {
-    onAddRow('holidays');
-  }
-
-  function handleAddVacationRow(): void {
-    onAddRow('vacations');
   }
 
   return (
@@ -82,74 +60,36 @@ const CalendarTrainingScheduleForm: React.FC<CalendarTrainingScheduleFormProps> 
           </Select>
         </FormControl>
       )}
-      <FormControl className={styles.field}>
-        <Typography variant="h6">Теоретическое обучение</Typography>
-        <ul className={styles.rows}>
-          {values.theoreticalEducation.map(({ start, end }, index) => {
-            function handleChange(value: DateRange) {
-              onTheoreticalEducationChange(value, index);
-            }
+      {dateRangeFields.map((field) => {
+        function handleAddRowButtonClick(): void {
+          onAddRow(field);
+        }
 
-            function handleClick(): void {
-              onRemoveRow('theoreticalEducation', index);
-            }
+        return (
+          <FormControl className={styles.field}>
+            <Typography variant="h6">{FieldLabelMap[field]}</Typography>
+            <ul className={styles.rows}>
+              {values[field].map(({ start, end }, index) => {
+                function handleChange(value: DateRange) {
+                  onDateRangeChange(value, field, index);
+                }
 
-            return (
-              <Stack key={index} direction="row" className={styles.row}>
-                <DateRangePicker values={{ start, end }} onChange={handleChange} />
-                {index > 0 && <RemoveRowButton onClick={handleClick} />}
-              </Stack>
-            );
-          })}
-          <AddRowButton onClick={handleAddTheoreticalEducationRow} />
-        </ul>
-      </FormControl>
+                function handleRemoveRowButtonClick(): void {
+                  onRemoveRow(field, index);
+                }
 
-      <FormControl className={styles.field}>
-        <Typography variant="h6">Нерабочие праздничные дни</Typography>
-        <ul className={styles.rows}>
-          {values.holidays.map(({ start, end }, index) => {
-            function handleChange(value: DateRange) {
-              onHolidaysChange(value, index);
-            }
-
-            function handleClick(): void {
-              onRemoveRow('holidays', index);
-            }
-
-            return (
-              <Stack key={index} direction="row" className={styles.row}>
-                <DateRangePicker values={{ start, end }} onChange={handleChange} />
-                {index > 0 && <RemoveRowButton onClick={handleClick} />}
-              </Stack>
-            );
-          })}
-          <AddRowButton onClick={handleAddHolidayRow} />
-        </ul>
-      </FormControl>
-
-      <FormControl className={styles.field}>
-        <Typography variant="h6">Каникулы</Typography>
-        <ul className={styles.rows}>
-          {values.vacations.map(({ start, end }, index) => {
-            function handleChange(value: DateRange) {
-              onVacationsChange(value, index);
-            }
-
-            function handleClick(): void {
-              onRemoveRow('vacations', index);
-            }
-
-            return (
-              <Stack key={index} direction="row" className={styles.row}>
-                <DateRangePicker values={{ start, end }} onChange={handleChange} />
-                {index > 0 && <RemoveRowButton onClick={handleClick} />}
-              </Stack>
-            );
-          })}
-          <AddRowButton onClick={handleAddVacationRow} />
-        </ul>
-      </FormControl>
+                return (
+                  <Stack key={index} direction="row" className={styles.row}>
+                    <DateRangePicker values={{ start, end }} onChange={handleChange} />
+                    {index > 0 && <RemoveRowButton onClick={handleRemoveRowButtonClick} />}
+                  </Stack>
+                );
+              })}
+              <AddRowButton onClick={handleAddRowButtonClick} />
+            </ul>
+          </FormControl>
+        );
+      })}
     </form>
   );
 };

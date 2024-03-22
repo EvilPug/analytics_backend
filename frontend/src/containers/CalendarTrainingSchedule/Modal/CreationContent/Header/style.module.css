@@ -1,21 +1,18 @@
 .header {
+  position: sticky;
+  top: 0;
+
   display: flex;
   justify-content: center;
   width: 100%;
   padding-bottom: 10px;
+
+  background-color: white;
+
+  z-index: 10;
 }
 
 .stepper {
   width: 50%;
   height: 30px;
-}
-
-.main {
-  padding: 40px 0;
-  height: 100%;
-  overflow-y: auto;
-}
-
-.footer {
-  column-gap: 10px;
 }

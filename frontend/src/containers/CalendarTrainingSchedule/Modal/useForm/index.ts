@@ -21,9 +21,7 @@ interface IUseCalendarTrainingScheduleForm {
   isSubmitting: boolean;
   onTypeChange: (value: ICalendarTrainingScheduleFormValues['type']) => void;
   onPrimaryScheduleIdChange: (value: ICalendarTrainingScheduleFormValues['primaryScheduleId']) => void;
-  onTheoreticalEducationChange: (value: DateRange, rowIndex: number) => void;
-  onHolidaysChange: (value: DateRange, rowIndex: number) => void;
-  onVacationsChange: (value: DateRange, rowIndex: number) => void;
+  onDateRangeChange: (value: DateRange, field: DateRangeField, rowIndex: number) => void;
   onAddRow: (field: DateRangeField) => void;
   onRemoveRow: (field: DateRangeField, rowIndex: number) => void;
   onSubmit: () => Promise<void>;
@@ -39,6 +37,11 @@ function useCalendarTrainingScheduleForm({
 
   const canSubmit = !!values.type;
 
+  // TODO: Убрать
+  React.useEffect(() => {
+    console.log('values=', values);
+  }, [values]);
+
   React.useEffect(() => {
     if (initialValues) {
       setValues(initialValues);
@@ -52,11 +55,6 @@ function useCalendarTrainingScheduleForm({
     };
   }, []);
 
-  // TODO: Убрать
-  React.useEffect(() => {
-    console.log('values=', values);
-  }, [values]);
-
   const onTypeChange: IUseCalendarTrainingScheduleForm['onTypeChange'] = (value) => {
     setValues((prev) => ({ ...prev, type: value }));
   };
@@ -65,47 +63,16 @@ function useCalendarTrainingScheduleForm({
     setValues((prev) => ({ ...prev, primaryScheduleId: value }));
   };
 
-  const onTheoreticalEducationChange: IUseCalendarTrainingScheduleForm['onTheoreticalEducationChange'] = (
-    value,
-    index
-  ) => {
+  const onDateRangeChange: IUseCalendarTrainingScheduleForm['onDateRangeChange'] = (value, field, index) => {
     if (value.start && value.end) {
       setValues((prev) => {
-        const next = [...prev.theoreticalEducation.map((value) => ({ ...value }))];
+        const next = [...prev[field].map((value) => ({ ...value }))];
 
         if (next[index]) {
           next[index] = { start: value.start, end: value.end };
         }
 
-        return { ...prev, theoreticalEducation: next };
-      });
-    }
-  };
-
-  const onHolidaysChange: IUseCalendarTrainingScheduleForm['onHolidaysChange'] = (value, index) => {
-    if (value.start && value.end) {
-      setValues((prev) => {
-        const next = [...prev.holidays.map((value) => ({ ...value }))];
-
-        if (next[index]) {
-          next[index] = { start: value.start, end: value.end };
-        }
-
-        return { ...prev, holidays: next };
-      });
-    }
-  };
-
-  const onVacationsChange: IUseCalendarTrainingScheduleForm['onVacationsChange'] = (value, index) => {
-    if (value.start && value.end) {
-      setValues((prev) => {
-        const next = [...prev.vacations.map((value) => ({ ...value }))];
-
-        if (next[index]) {
-          next[index] = { start: value.start, end: value.end };
-        }
-
-        return { ...prev, vacations: next };
+        return { ...prev, [field]: next };
       });
     }
   };
@@ -140,9 +107,7 @@ function useCalendarTrainingScheduleForm({
     isSubmitting,
     onTypeChange,
     onPrimaryScheduleIdChange,
-    onTheoreticalEducationChange,
-    onHolidaysChange,
-    onVacationsChange,
+    onDateRangeChange,
     onAddRow,
     onRemoveRow,
     onSubmit,

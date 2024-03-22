@@ -1,16 +1,21 @@
 import React from 'react';
-import { DialogActions, DialogContent } from '@mui/material';
+import { useSnackbar } from 'notistack';
+import { Button, CircularProgress, DialogActions, DialogContent } from '@mui/material';
+
 import CalendarTrainingScheduleForm from '../Form';
 import useCalendarTrainingScheduleForm from '../useForm';
-import { ICalendarTrainingScheduleFormValues } from '../types';
+import { mockApiRequest } from '../utils';
+import type { ICalendarTrainingScheduleFormValues } from '../types';
 
 type EditingContentProps = {
   scheduleId: string;
   className?: string;
+  onClose: VoidFunction;
 };
 
-const EditingContent: React.FC<EditingContentProps> = ({ scheduleId, className }) => {
+const EditingContent: React.FC<EditingContentProps> = ({ scheduleId, className, onClose }) => {
   const [initialValues, setInitialValues] = React.useState<ICalendarTrainingScheduleFormValues | null>(null);
+  const { enqueueSnackbar } = useSnackbar();
 
   React.useEffect(() => {
     if (scheduleId) {
@@ -28,16 +33,47 @@ const EditingContent: React.FC<EditingContentProps> = ({ scheduleId, className }
     }
   }, []);
 
+  async function onSubmitForm(): Promise<void> {
+    try {
+      await mockApiRequest('success');
+      onClose();
+      enqueueSnackbar('КУГ успешно изменен!', { variant: 'success' });
+    } catch (error) {
+      enqueueSnackbar('Не удалось изменить КУГ. Попробуйте позднее.', { variant: 'error' });
+    }
+  }
+
   const { values, errors, isSubmitting, canSubmit, onSubmit, ...handlers } = useCalendarTrainingScheduleForm({
     initialValues,
+    onSubmitForm,
   });
+
+  function handleCloseButtonClick(): void {
+    onClose();
+  }
+
+  function handleFinishButtonClick(): void {
+    onSubmit();
+  }
 
   return (
     <>
       <DialogContent className={className}>
         <CalendarTrainingScheduleForm values={values} errors={errors} {...handlers} />
       </DialogContent>
-      <DialogActions></DialogActions>
+      <DialogActions>
+        <Button disabled={isSubmitting} onClick={handleCloseButtonClick}>
+          Отмена
+        </Button>
+        <Button
+          variant="contained"
+          startIcon={isSubmitting && <CircularProgress size={20} />}
+          disabled={!canSubmit || isSubmitting}
+          onClick={handleFinishButtonClick}
+        >
+          Создать
+        </Button>
+      </DialogActions>
     </>
   );
 };

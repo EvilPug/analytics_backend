@@ -1,16 +1,11 @@
 import React from 'react';
 import { Card, CardActionArea, CardContent, Typography } from '@mui/material';
 
-import type { CalendarTrainingScheduleType } from '../types';
+import type { CalendarTrainingScheduleType } from '../../types';
+
+import { TypeLabelMap, types } from './utils';
 
 import styles from './style.module.css';
-
-const types: CalendarTrainingScheduleType[] = ['primary', 'secondary'];
-
-const TypeLabelMap: { [key in CalendarTrainingScheduleType]: string } = {
-  primary: 'Первичный',
-  secondary: 'Вторичный',
-};
 
 type CalendarTrainingScheduleTypeSelectProps = {
   onSelect: (type: CalendarTrainingScheduleType) => void;

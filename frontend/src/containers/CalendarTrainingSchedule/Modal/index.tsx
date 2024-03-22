@@ -23,7 +23,7 @@ const CalendarTrainingScheduleModal: React.FC<CalendarTrainingScheduleModalProps
 }) => {
   const title = scheduleId ? 'Редактировать КУГ' : 'Создать КУГ';
   const content = scheduleId ? (
-    <EditingContent scheduleId={scheduleId} className={styles.content} />
+    <EditingContent scheduleId={scheduleId} className={styles.content} onClose={onClose} />
   ) : (
     <CreationContent className={styles.content} onClose={onClose} />
   );

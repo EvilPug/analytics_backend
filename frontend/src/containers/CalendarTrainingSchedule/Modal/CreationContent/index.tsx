@@ -1,19 +1,15 @@
 import React from 'react';
-import { Button, CircularProgress, DialogActions, DialogContent, Step, StepLabel, Stepper } from '@mui/material';
 import { useSnackbar } from 'notistack';
+import { Button, CircularProgress, DialogActions, DialogContent } from '@mui/material';
 
-import CalendarTrainingScheduleTypeSelect from '../TypeSelect';
 import CalendarTrainingScheduleForm from '../Form';
 import useCalendarTrainingScheduleForm from '../useForm';
+import { mockApiRequest } from '../utils';
 import type { CalendarTrainingScheduleType } from '../types';
 
+import CreationContentHeader from './Header';
+import CalendarTrainingScheduleTypeSelect from './TypeSelect';
 import { maxStepIndex, steps } from './utils';
-
-import styles from './style.module.css';
-
-function mockApiRequest(result: 'success' | 'error' = 'success'): Promise<unknown> {
-  return new Promise((resolve, reject) => setTimeout(result === 'success' ? resolve : reject, 3000));
-}
 
 type CreationContentProps = {
   className?: string;
@@ -21,10 +17,8 @@ type CreationContentProps = {
 };
 
 const CreationContent: React.FC<CreationContentProps> = ({ className, onClose }) => {
-  const { enqueueSnackbar } = useSnackbar();
   const [activeStepIndex, setActiveStepIndex] = React.useState(0);
-  const { values, errors, canSubmit, isSubmitting, onTypeChange, onSubmit, ...handlers } =
-    useCalendarTrainingScheduleForm({ onSubmitForm });
+  const { enqueueSnackbar } = useSnackbar();
 
   async function onSubmitForm(): Promise<void> {
     try {
@@ -35,6 +29,9 @@ const CreationContent: React.FC<CreationContentProps> = ({ className, onClose })
       enqueueSnackbar('Не удалось создать КУГ. Попробуйте позднее.', { variant: 'error' });
     }
   }
+
+  const { values, errors, canSubmit, isSubmitting, onTypeChange, onSubmit, ...handlers } =
+    useCalendarTrainingScheduleForm({ onSubmitForm });
 
   function handleTypeSelect(type: CalendarTrainingScheduleType): void {
     onTypeChange(type);
@@ -57,21 +54,13 @@ const CreationContent: React.FC<CreationContentProps> = ({ className, onClose })
   return (
     <>
       <DialogContent className={className}>
-        <header className={styles.header}>
-          <Stepper activeStep={activeStepIndex} className={styles.stepper}>
-            {steps.map(({ key, label }) => (
-              <Step key={key}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-        </header>
-        <section className={styles.main}>
+        <CreationContentHeader steps={steps} activeStep={activeStepIndex} />
+        <section>
           {activeStepIndex === 0 && <CalendarTrainingScheduleTypeSelect onSelect={handleTypeSelect} />}
           {activeStepIndex === 1 && <CalendarTrainingScheduleForm values={values} errors={errors} {...handlers} />}
         </section>
       </DialogContent>
-      <DialogActions className={styles.footer}>
+      <DialogActions>
         <Button disabled={isSubmitting} onClick={handlePrevButtonClick}>
           {activeStepIndex === 0 ? 'Отмена' : 'Назад'}
         </Button>
