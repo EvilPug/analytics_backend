@@ -1,63 +1,69 @@
 import React from 'react';
-import moment from 'moment';
-import { Stack } from '@mui/material';
+import moment, { Moment } from 'moment';
+import { Stack, Typography } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 
-import type { DateRange, DateRangeItem } from '../../types';
+import type { DateRange } from '../../types';
 
 import styles from './style.module.css';
 
 type DateRangePickerProps = {
   values: DateRange;
-  placeholder?: { start?: string; end?: string };
+  error?: string;
   onChange: (value: DateRange) => void;
 };
 
-const DateRangePicker: React.FC<DateRangePickerProps> = ({ values, placeholder, onChange }) => {
-  const [range, setRange] = React.useState<DateRange>(values);
-
+const DateRangePicker: React.FC<DateRangePickerProps> = ({ values, error, onChange }) => {
   const minDate = React.useMemo(() => {
-    if (range.start) {
-      return range.start;
+    if (values.start) {
+      return values.start;
     }
-  }, [range.start]);
+  }, [values.start]);
 
-  React.useEffect(() => {
-    setRange(values);
-  }, [values]);
+  function handleStartDateChange(value: Moment | null): void {
+    if (value) {
+      const date = value.toDate();
+      const next = { ...values };
 
-  React.useEffect(() => {
-    if (range.start && range.end && range.start > range.end) {
-      setRange((prev) => ({ ...prev, end: range.start }));
+      next.start = date;
+
+      if (values.end && date.getTime() > values.end.getTime()) {
+        next.end = date;
+      }
+
+      onChange(next);
     }
-
-    onChange(range);
-  }, [range.start, range.end]);
-
-  function handleStartDateChange(value: DateRangeItem): void {
-    setRange((prev) => ({ ...prev, start: value }));
   }
 
-  function handleEndDateChange(value: DateRangeItem): void {
-    setRange((prev) => ({ ...prev, end: value }));
+  function handleEndDateChange(value: Moment | null): void {
+    if (value) {
+      onChange({ ...values, end: value.toDate() });
+    }
   }
 
   return (
-    <Stack direction="row" className={styles.range}>
-      <DatePicker
-        label="C"
-        value={moment(range.start) as unknown as Date}
-        className={styles.picker}
-        onChange={handleStartDateChange}
-      />
-      <DatePicker
-        label="По"
-        value={moment(range.end) as unknown as Date}
-        minDate={minDate}
-        className={styles.picker}
-        onChange={handleEndDateChange}
-      />
-    </Stack>
+    <div className={styles.container}>
+      <Stack direction="row" spacing={1} className={styles.range}>
+        <DatePicker
+          label="C"
+          value={values.start ? moment(values.start) : null}
+          slotProps={{ textField: { error: !!error } }}
+          className={styles.picker}
+          onChange={handleStartDateChange}
+        />
+        <DatePicker
+          label="По"
+          value={values.end ? moment(values.end) : null}
+          minDate={moment(minDate)}
+          slotProps={{ textField: { error: !!error } }}
+          className={styles.picker}
+          onChange={handleEndDateChange}
+        />
+      </Stack>
+      <Typography variant="caption" sx={(theme) => ({ color: theme.palette.error.light })}>
+        {error}
+      </Typography>
+    </div>
   );
 };
 

@@ -1,5 +1,12 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .range {
   width: 100%;
+  height: 54px;
 }
 
 .picker {

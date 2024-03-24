@@ -71,7 +71,7 @@ const EditingContent: React.FC<EditingContentProps> = ({ scheduleId, className, 
           disabled={!canSubmit || isSubmitting}
           onClick={handleFinishButtonClick}
         >
-          Создать
+          Сохранить
         </Button>
       </DialogActions>
     </>

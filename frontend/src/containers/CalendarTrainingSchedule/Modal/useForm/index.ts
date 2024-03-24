@@ -7,7 +7,7 @@ import type {
   ICalendarTrainingScheduleFormValues,
 } from '../types';
 
-import { defaultErrors, defaultValues, emptyDateRange } from './utils';
+import { checkForm, defaultErrors, defaultValues, emptyDateRange, validateDateRange } from './utils';
 
 interface IUseCalendarTrainingScheduleFormArgs {
   initialValues?: ICalendarTrainingScheduleFormValues | null;
@@ -35,7 +35,10 @@ function useCalendarTrainingScheduleForm({
   const [values, setValues] = React.useState<ICalendarTrainingScheduleFormValues>(defaultValues);
   const [errors, setErrors] = React.useState<CalendarTrainingScheduleFormErrors>(defaultErrors);
 
-  const canSubmit = !!values.type;
+  const { theoreticalEducation, holidays, vacations } = values;
+
+  const hasChanges = values !== initialValues;
+  const canSubmit = checkForm(values, errors) && hasChanges;
 
   // TODO: Убрать
   React.useEffect(() => {
@@ -63,18 +66,25 @@ function useCalendarTrainingScheduleForm({
     setValues((prev) => ({ ...prev, primaryScheduleId: value }));
   };
 
-  const onDateRangeChange: IUseCalendarTrainingScheduleForm['onDateRangeChange'] = (value, field, index) => {
-    if (value.start && value.end) {
-      setValues((prev) => {
-        const next = [...prev[field].map((value) => ({ ...value }))];
+  const onDateRangeChange: IUseCalendarTrainingScheduleForm['onDateRangeChange'] = (value, field, rowIndex) => {
+    const errorMessage = validateDateRange(value, { theoreticalEducation, holidays, vacations }, field, rowIndex);
 
-        if (next[index]) {
-          next[index] = { start: value.start, end: value.end };
-        }
+    setErrors((prev) => {
+      const next = [...prev[field]];
+      next[rowIndex] = errorMessage;
 
-        return { ...prev, [field]: next };
-      });
-    }
+      return { ...prev, [field]: next };
+    });
+
+    setValues((prev) => {
+      const next = [...prev[field].map((value) => ({ ...value }))];
+
+      if (next[rowIndex]) {
+        next[rowIndex] = { start: value.start, end: value.end };
+      }
+
+      return { ...prev, [field]: next };
+    });
   };
 
   const onAddRow: IUseCalendarTrainingScheduleForm['onAddRow'] = (field) => {
@@ -82,7 +92,7 @@ function useCalendarTrainingScheduleForm({
   };
 
   const onRemoveRow: IUseCalendarTrainingScheduleForm['onRemoveRow'] = (field, rowIndex) => {
-    console.log(rowIndex);
+    setErrors((prev) => ({ ...prev, [field]: [...prev[field].filter((_, index) => index !== rowIndex)] }));
     setValues((prev) => ({ ...prev, [field]: [...prev[field].filter((_, index) => index !== rowIndex)] }));
   };
 

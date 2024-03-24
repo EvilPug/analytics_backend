@@ -44,7 +44,9 @@ const CalendarTrainingScheduleForm: React.FC<CalendarTrainingScheduleFormProps> 
     <form className={styles.form}>
       {values.type === 'secondary' && (
         <FormControl size="small">
-          <InputLabel id="primary-schedule-select">Выберите первичный КУГ</InputLabel>
+          <InputLabel id="primary-schedule-select" required={true}>
+            Выберите первичный КУГ
+          </InputLabel>
           <Select
             value={values.primaryScheduleId ?? ''}
             label="Выберите первичный КУГ"
@@ -66,7 +68,7 @@ const CalendarTrainingScheduleForm: React.FC<CalendarTrainingScheduleFormProps> 
         }
 
         return (
-          <FormControl className={styles.field}>
+          <FormControl key={field} className={styles.field}>
             <Typography variant="h6">{FieldLabelMap[field]}</Typography>
             <ul className={styles.rows}>
               {values[field].map(({ start, end }, index) => {
@@ -79,9 +81,9 @@ const CalendarTrainingScheduleForm: React.FC<CalendarTrainingScheduleFormProps> 
                 }
 
                 return (
-                  <Stack key={index} direction="row" className={styles.row}>
-                    <DateRangePicker values={{ start, end }} onChange={handleChange} />
-                    {index > 0 && <RemoveRowButton onClick={handleRemoveRowButtonClick} />}
+                  <Stack key={index} direction="row" spacing={1} className={styles.row}>
+                    <DateRangePicker values={{ start, end }} error={errors[field][index]} onChange={handleChange} />
+                    <RemoveRowButton isDisabled={index === 0} onClick={handleRemoveRowButtonClick} />
                   </Stack>
                 );
               })}
