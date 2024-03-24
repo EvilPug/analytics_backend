@@ -95,22 +95,24 @@ export function checkForm(
   errors: CalendarTrainingScheduleFormErrors
 ): boolean {
   const isTypeValid = !!values.type && !errors.type;
-  const isPrimaryScheduleValid = values.type === 'secondary' ? !!values.primaryScheduleId : true;
+  const isPrimaryScheduleValid =
+    values.type === 'secondary' ? !!values.primaryScheduleId && !errors.primaryScheduleId : true;
 
-  // const isTheoreticalEducationValid = !!values.theoreticalEducation.length && !errors.theoreticalEducation.length;
-  // const isHolidaysValid = !!values.holidays.length && !errors.holidays.length;
-  // const isVacationsValid = !!values.vacations.length && !errors.vacations.length;
+  const isTheoreticalEducationValid = !errors.theoreticalEducation.filter((error) => !!error).length;
+  const isHolidaysValid = !errors.holidays.filter((error) => !!error).length;
+  const isVacationsValid = !errors.vacations.filter((error) => !!error).length;
 
-  const hasAtLeastOneRecord = [...values.theoreticalEducation, ...values.holidays, ...values.vacations].some(
+  const hasAtLeastOneDateRange = [...values.theoreticalEducation, ...values.holidays, ...values.vacations].some(
     (dateRange) => dateRange.start && dateRange.end
   );
 
-  const isFormValid = isTypeValid && isPrimaryScheduleValid && hasAtLeastOneRecord;
-
-  // console.log('isFormValid', isFormValid);
-  // console.log('form - isTypeValid', isTypeValid);
-  // console.log('form - isPrimaryScheduleValid', isPrimaryScheduleValid);
-  // console.log('form - hasAtLeastOneRecord', hasAtLeastOneRecord);
+  const isFormValid =
+    isTypeValid &&
+    isPrimaryScheduleValid &&
+    isTheoreticalEducationValid &&
+    isHolidaysValid &&
+    isVacationsValid &&
+    hasAtLeastOneDateRange;
 
   return isFormValid;
 }
